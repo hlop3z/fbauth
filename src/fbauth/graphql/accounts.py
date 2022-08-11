@@ -43,7 +43,7 @@ class Accounts(GQL):
             return []
 
         async def detail(info, id: str) -> Query(types.User):
-            """Read the Docs"""
+            """## Get User by ID"""
             results = await User.users.detail(id)
             if results:
                 item = results.__dict__
@@ -57,7 +57,7 @@ class Accounts(GQL):
         async def create(
             username: str, password: str, email: str
         ) -> Mutation(types.User):
-            """## Create Role"""
+            """## Create Account"""
             message = "Something went wrong!"
             results = await User.create(
                 username=username, password=password, email=email, role_id=1

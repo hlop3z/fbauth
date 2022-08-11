@@ -1,0 +1,25 @@
+[project]
+name = "fbauth"
+version = "0.0.2"
+description = ""
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+authors = [
+    {name = "hlop3z", email = "23062270+hlop3z@users.noreply.github.com"},
+]
+dependencies = [
+    "dbcontroller>=0.1.17",
+]
+requires-python = ">=3.10"
+[project.optional-dependencies]
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool]
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+devops = [
+    "fastberry>=0.0.41",
+]

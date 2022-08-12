@@ -47,4 +47,6 @@ class User:
     async def role(self) -> typing.Optional["Role"]:
         db = SQL(Role)
         role = await db.get_by(_id=self.role_id)
-        return Role(**role.__dict__)
+        if role:
+            return Role(**role.__dict__)
+        return Role(name="__unknown__", perms=[])

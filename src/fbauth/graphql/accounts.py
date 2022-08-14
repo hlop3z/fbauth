@@ -29,8 +29,7 @@ sql_manager = SQL(types.User)
 class Accounts(GQL):
     """Demo Api"""
 
-    schema = None
-    prefix = "account"
+    schema = types.User
 
     class Query:
         """Query"""

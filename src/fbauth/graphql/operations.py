@@ -5,6 +5,7 @@
 
 # Fastberry
 from fastberry import GQL, Fastberry, to_camel_case
+from .. import types
 
 SETTINGS = Fastberry()
 
@@ -21,16 +22,15 @@ class Operations(GQL):
 
     class Query:
         """Query"""
-
-        async def queries(info) -> list[str]:
-            """## List of All GraphQL Queries"""
+        
+        async def app_operations(info) -> list[types.Operation]:
+            """## List of All GraphQL Operations"""
             # print(info)
-            ops = SETTINGS.apps.operations.query
-            query_names = [to_camel_case(x) for x in ops]
-            return query_names
-
-        async def mutations(info) -> list[str]:
-            """## List of All GraphQL Mutations"""
-            ops = SETTINGS.apps.operations.mutation
-            mutation_names = [to_camel_case(x) for x in ops]
-            return mutation_names
+            items = []
+            for x in SETTINGS.apps.operations.query:
+                active = types.Operation(name = to_camel_case(x), type="Query")
+                items.append(active)
+            for x in SETTINGS.apps.operations.mutation:
+                active = types.Operation(name = to_camel_case(x), type="Mutation")
+                items.append(active)
+            return items

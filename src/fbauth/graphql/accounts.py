@@ -5,18 +5,14 @@
 
 import functools
 
+
 # Fastberry
-import strawberry
 from fastberry import GQL
-from fastberry.graphql.inputs import Pagination
-from fastberry.graphql.types import (
-    Edges,
-    Error,
-    ErrorMessage,
-    Mutation,
-    Query,
-    Response,
-)
+from fastberry.graphql.types import Error, ErrorMessage, Mutation, Query
+from fbauth import types
+from fbauth.actions.users import User
+
+from ..types import AccessToken
 
 from .. import types
 from ..actions.users import User
@@ -34,22 +30,24 @@ class Accounts(GQL):
     class Query:
         """Query"""
 
-        async def all() -> list[types.User]:
-            """## Get All Users"""
-            items = await sql_manager.all()
-            if items.data:
-                return [types.User(**item.__dict__) for item in items.data]
-            return []
-
-        async def detail(info, id: str) -> Query(types.User):
-            """## Get User by ID"""
-            results = await User.users.detail(id)
-            if results:
-                item = results.__dict__
-                item["password"] = None
-                return types.User(**item)
-            return None
-
+        async def me(info) -> Query(types.User):
+            """## Get Current User(Me)"""
+            account = info.context.get("user")
+            user = None
+            if account:
+                user = types.User(
+                    id=account.id,
+                    username=account.username,
+                    password=None,
+                    email=account.email,
+                    is_disabled=account.is_disabled,
+                    is_staff=account.is_staff,
+                    is_super_user=account.is_super_user,
+                    created_on=account.created_on,
+                    role_id=account.role_id,
+                )
+            return user
+        
     class Mutation:
         """Mutation"""
 
@@ -73,3 +71,22 @@ class Accounts(GQL):
             elif "UNIQUE" in results.error_message and "email" in results.error_message:
                 message = "Email is already registered."
             return Error([ErrorMessage(type="input", message=message)])
+
+        async def login(
+            password: str, username: str | None = None, email: str | None = None
+        ) -> Mutation(AccessToken):
+            """## User Login"""
+            user_selector = "username"
+            if email:
+                user_selector = "email"
+                found_user = await User.get_by(email=email)
+                if found_user:
+                    username = found_user.username
+            access = await User.authenticate(username=username, password=password)
+            # ... on Success
+            if access.is_valid:
+                return AccessToken(token=access.token)
+            # ... on Error
+            message = f"Invalid {user_selector} or password."
+            return Error([ErrorMessage(type="credentials", message=message)])
+

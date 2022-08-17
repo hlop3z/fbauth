@@ -19,6 +19,16 @@ class Date:
 
 
 # Create your <types> here.
+@model.type
+class AccessToken:
+    token: str
+    token_type: str = "bearer"
+
+@model.type
+class Operation:
+    name: str
+    type: str
+
 @model.sql(
     required=["name"],
     unique=["name"],

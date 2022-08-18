@@ -22,6 +22,8 @@ from ..database import SQL
 sql_manager = SQL(types.Role)
 
 # Create your API (GraphQL) here.
+
+
 class Roles(GQL):
     """Roles Api"""
 
@@ -70,7 +72,7 @@ class Roles(GQL):
         async def create(name: str) -> Mutation(types.Role):
             """## Create Role"""
             message = "Something went wrong!"
-            results = await sql_manager.create({"name": name})
+            results = await sql_manager.create({"name": name, "perms": []})
             if not results.error:
                 return types.Role(**results.data.__dict__)
             if "UNIQUE" in results.error_message:

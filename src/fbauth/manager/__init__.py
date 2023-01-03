@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    CRUD - Init
+    { Controller } for the Database(s)
 """
 
 from .role import Role

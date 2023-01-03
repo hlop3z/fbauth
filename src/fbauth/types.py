@@ -1,62 +1,49 @@
 # -*- coding: utf-8 -*-
 """
-    API - Strawberry Types
+    { Types } for GraphQL
 """
-import dataclasses as dc
-import datetime
-import typing
+
+from typing import Optional
 
 import fastberry as fb
 
-from .database import SQL, model
-
 
 # Create your <types> here.
-class Date:
-    datetime = lambda: datetime.datetime.now()
-    date = lambda: datetime.date.today()
-    time = lambda: datetime.datetime.now().time()
-
-
-# Create your <types> here.
-@model.type
-class AccessToken:
-    token: str
-    token_type: str = "bearer"
-
-@model.type
-class Operation:
-    name: str
-    type: str
-
-@model.sql(
+@fb.sql.model(
     required=["name"],
     unique=["name"],
 )
 class Role:
+    """User's Account Role"""
+
     name: str
-    perms: fb.JSON
+    perms: fb.json
 
 
-@model.sql(
+@fb.sql.model(
     required=["username", "email"],
     index=["username"],
     unique=["username", "email"],
+    ignore=["is_authenticated", "is_anonymous"],
 )
 class User:
+    """User's Account"""
+
     username: str
     password: str
     email: str
+    role: Optional["Role"] = None
     is_disabled: bool = False
     is_staff: bool = False
     is_super_user: bool = False
-    created_on: datetime.datetime = dc.field(default_factory=Date.datetime)
-    # updated_on: datetime.datetime = dc.field(default_factory=Date.datetime)
-    role_id: int | None = None
+    created_on: fb.datetime = fb.field(fb.Date.datetime)
+    is_authenticated: bool = False
+    is_anonymous: bool = True
 
-    async def role(self) -> typing.Optional["Role"]:
-        db = SQL(Role)
-        role = await db.get_by(_id=self.role_id)
-        if role:
-            return Role(**role.__dict__)
-        return Role(name="__unknown__", perms=[])
+
+@fb.type
+class AccessToken:
+    """Account Acces Token"""
+
+    token: str
+    token_type: str = "bearer"

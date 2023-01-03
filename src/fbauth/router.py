@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
-""" 
+"""
     [Router]
 """
 
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastberry import to_camel_case
+from fastberry import Router
+from fastberry.tools import to_camel_case
 
-from .actions import ACCESS_TOKEN_URL, User
+# Type(s) Tools
+from . import manager, security
 
-router = APIRouter(tags=["Users"])
+ACCESS_TOKEN_URL = security.config.ACCESS_TOKEN_URL
+
+router = Router(tags=["Users"])
 
 ACCESS_OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=ACCESS_TOKEN_URL)
 
@@ -27,10 +31,10 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    results = await User.verify_token(token)
-    if not results.is_valid:
+    user = await manager.User.me(token)
+    if not user.is_authenticated:
         raise credentials_exception
-    return results.user
+    return user
 
 
 async def get_current_active_user(
@@ -53,7 +57,7 @@ async def login_for_access_token(
     # Login
     """
 
-    access = await User.authenticate(
+    access = await manager.User.authenticate(
         username=form_data.username, password=form_data.password
     )
 
@@ -66,11 +70,12 @@ async def login_for_access_token(
         )
 
     # Add Cookie
+    access_token = access.token
     response.set_cookie(
-        key="Authorization", value=access.token, httponly=True, secure=True
+        key="Authorization", value=access_token.token, httponly=True, secure=True
     )
 
-    return {"access_token": access.token, "token_type": "bearer"}
+    return {"access_token": access_token.token, "token_type": "bearer"}
 
 
 @router.get("/logout")
@@ -81,7 +86,6 @@ async def logout_current_user(
     # Logout
     """
 
-    me = current_user
     response = JSONResponse({"logout": True})
     response.delete_cookie(key="Authorization")
     return response
@@ -94,6 +98,11 @@ async def read_user_me(current_user: Any = Depends(get_current_active_user)):
     """
 
     user_me = {to_camel_case(k): v for k, v in current_user.__dict__.items()}
-    user_me["password"] = None
+
     del user_me["Id"]
+    if user_me.get("role", {}):
+        user_me["role"] = user_me["role"].__dict__
+        if user_me["role"].get("_id"):
+            del user_me["role"]["_id"]
+        user_me["role"] = {to_camel_case(k): v for k, v in user_me["role"].items()}
     return user_me

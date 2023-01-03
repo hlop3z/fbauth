@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    [Hashing]
+    Hashing
 """
 
 from passlib.context import CryptContext
@@ -9,12 +9,14 @@ password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class Password:
+    """Password Manager"""
+
     def hash(password: str):
-        """[Password to Hash]"""
+        """Password to Hash"""
         return password_context.hash(password)
 
     def verify(input_plain_password: str, hashed_password: str):
-        """[Verify Password]
+        """Verify Password
 
         Args:
             input_plain_password (str): Input from user.

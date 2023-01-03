@@ -10,7 +10,7 @@ class AuthenticatedCookieMiddleware(BaseMiddleware):
     """Get Authorization From Cookie"""
 
     async def dispatch(self, request, call_next):
-        """Process Request and Inject Header"""
+        """Inject Header to Request"""
 
         if (
             "Authorization" not in request.headers

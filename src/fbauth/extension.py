@@ -2,18 +2,22 @@
 """ [Extension]
     Inject { User } or { Anonymous-User } to GraphQL Context.
 """
-import types
 
 from fastberry import BaseExtension
 
-from .actions import User
-from .actions.security import AccessToken
+from .manager import User
+
+# from .security import AccessToken
 
 
 async def get_request_user(request):
     """Get User from Request the Header or Cookie"""
     token = request.headers.get("authorization", "").replace("Bearer ", "")
-    user = await User.verify_token(token)
+    user = await User.me(token)
+    if user.is_anonymous:
+        anonymous_id = request.cookies.get("Anonymous", None)
+        if anonymous_id:
+            user.id = anonymous_id
     return user
 
 
@@ -21,7 +25,8 @@ class InjectUser(BaseExtension):
     """Inject User Extension"""
 
     async def on_executing_start(self):
+        """GrapQL Execution"""
         request = self.execution_context.context.get("request")
-        token = await get_request_user(request)
+        user = await get_request_user(request)
         # Set-User (Context)
-        self.execution_context.context["user"] = token.user
+        self.execution_context.context["user"] = user

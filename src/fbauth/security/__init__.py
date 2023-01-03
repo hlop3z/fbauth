@@ -3,5 +3,6 @@
     [Security]
 """
 
+from . import config
 from .hashing import Password
-from .token import AccessToken
+from .tokens import AccessToken

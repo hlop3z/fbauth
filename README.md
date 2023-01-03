@@ -33,6 +33,16 @@ python manage.py create-user --super --username admin --password secret --email 
 python manage.py create-user --super -u admin -p secret -e admin@example.com
 ```
 
+## **Public** Role (Perms)
+
+config file `/config/public-perms.json`
+
+```json
+{
+  "perms": ["UserCreate", "UserLogin", "UserMe"]
+}
+```
+
 ## GraphQL **Client**
 
 ```graphql

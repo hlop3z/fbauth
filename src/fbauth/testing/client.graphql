@@ -78,16 +78,6 @@ query UserDetail {
   }
 }
 
-query UserSearch {
-  UserSearch(username: "john-doe") {
-    edges {
-      node {
-        ...UserFields
-      }
-    }
-  }
-}
-
 # Roles
 
 query AllRoles {

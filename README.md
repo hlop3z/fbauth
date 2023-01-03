@@ -49,6 +49,18 @@ config file `/config/public-perms.json`
 }
 ```
 
+## Add Middleware & Extensions
+
+config file `/config/spoc.toml`
+
+```toml
+# [spoc] ...
+[spoc.extras]
+middleware = ["fbauth.middleware.AuthenticatedCookieMiddleware"]
+extensions = ["fbauth.extension.InjectUser"]
+permissions = ["fbauth.permissions.IsAuthorized"]
+```
+
 ## GraphQL **Client**
 
 ```graphql
@@ -129,16 +141,6 @@ query UserMe {
 query UserDetail {
   UserDetail(id: "MTo6YTU1ZTUzMmVhYjAyOGI0Mg==") {
     ...UserFields
-  }
-}
-
-query UserSearch {
-  UserSearch(username: "john-doe") {
-    edges {
-      node {
-        ...UserFields
-      }
-    }
   }
 }
 

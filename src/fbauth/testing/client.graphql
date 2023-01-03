@@ -99,7 +99,7 @@ query AllRoles {
 }
 
 mutation CreateRole {
-  RoleCreate(form: { name: "hello", perms: ["UserMe"] }) {
+  RoleCreate(form: { name: "norolename", perms: ["UserMe"] }) {
     ... on Role {
       id
       name
@@ -113,7 +113,7 @@ mutation CreateRole {
 
 mutation UpdateRole {
   RoleUpdate(
-    form: { id: "Mjo6M2VmOWFiYmI1ZGY1YjY0MQ==", name: "badboy", perms: null }
+    form: { id: "Mjo6M2VmOWFiYmI1ZGY1YjY0MQ==", name: "manager", perms: null }
   ) {
     ... on Role {
       id

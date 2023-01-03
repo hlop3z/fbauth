@@ -155,7 +155,7 @@ query AllRoles {
 }
 
 mutation CreateRole {
-  RoleCreate(form: { name: "norolename", perms: ["UserMe"] }) {
+  RoleCreate(form: { name: "enduser", perms: null }) {
     ... on Role {
       id
       name
@@ -169,7 +169,11 @@ mutation CreateRole {
 
 mutation UpdateRole {
   RoleUpdate(
-    form: { id: "Mjo6M2VmOWFiYmI1ZGY1YjY0MQ==", name: "manager", perms: null }
+    form: {
+      id: "MTo6YTU1ZTUzMmVhYjAyOGI0Mg=="
+      name: "manager"
+      perms: ["AllRoles"]
+    }
   ) {
     ... on Role {
       id
@@ -183,7 +187,7 @@ mutation UpdateRole {
 }
 
 mutation DeleteRole {
-  RoleDelete(id: "Mjo6M2VmOWFiYmI1ZGY1YjY0MQ==")
+  RoleDelete(id: "MTo6YTU1ZTUzMmVhYjAyOGI0Mg==")
 }
 
 # Reusable

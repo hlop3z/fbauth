@@ -21,6 +21,12 @@ add file `/config/.env/development.toml`
 SECRET_KEY = "fastapi-insecure-09d25e094faa6ca2556c"
 ```
 
+## Database **Migration**
+
+```sh
+python manage.py db auto-migrate
+```
+
 ## Create **Super User**
 
 ```sh
